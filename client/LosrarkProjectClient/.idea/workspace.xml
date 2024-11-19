@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cccbeff6-239f-419d-a9fb-7e7c5353a125" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/todo-List.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../server/LosrarkProjectServer/src/main/java/org/example/SocketConnecter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../server/LostarkProject/src/GetLostarkData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/LostarkProject/src/GetLostarkData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../server/LosrarkProjectServer/src/main/java/org/example/GetLostarkData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../server/LosrarkProjectServer/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/LosrarkProjectServer/build.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +64,7 @@
       <updated>1731550878740</updated>
       <workItem from="1731550879711" duration="2685000" />
       <workItem from="1731555823285" duration="326000" />
-      <workItem from="1731973102139" duration="353000" />
+      <workItem from="1731973102139" duration="1161000" />
     </task>
     <servers />
   </component>

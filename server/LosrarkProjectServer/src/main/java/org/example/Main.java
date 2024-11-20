@@ -1,5 +1,6 @@
 package org.example;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ public class Main {
         for (Map<String, Object> dataMap : dataSheet.getData()) {
             System.out.println(dataMap);
         }
+        System.out.println(dataSheet.encoding());
     }
 
     public static class DataSheet {
@@ -62,6 +64,16 @@ public class Main {
                 this.YesterdayAvgPrice = null;
                 this.RecentPrice = null;
                 this.state = 0;
+            }
+
+            public String encoding () {
+                String response = "Q";
+                response += "i" + id;
+                response += "n" + name;
+                response += "y" + YesterdayAvgPrice;
+                response += "r" + RecentPrice;
+
+                return response;
             }
 
             public int getDataState () {
@@ -124,6 +136,18 @@ public class Main {
         }
         List<Data> data;
         Data tempData;
+
+        public String encoding () {
+            String response = "뒓";
+
+            LocalDateTime now = LocalDateTime.now();
+//            response += now;
+            for (Data data : data) {
+                response += data.encoding();
+            }
+
+            return response;
+        }
 
         public DataSheet() {
             data = new ArrayList<>();

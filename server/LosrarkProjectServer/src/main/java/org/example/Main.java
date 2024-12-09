@@ -6,8 +6,23 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
+//        App();
+        MongoDB();
+    }
+
+    public static void MongoDB() {
+        MongoConfig mongoConfig = new MongoConfig();
+        mongoConfig.MongoDBCreate();
+    }
+
+    public static void App() {
 //        SocketConnecter socketConnecter = new SocketConnecter();
 //        socketConnecter.socket();
+
+        /**
+         * 받아올 데이터 검색
+         * jsonDatas 에 검색어 저장
+         */
         int[] categoryCodes = {90200, 90300, 90400, 90500, 90600, 90700};
 
         List<Map<String, Object>> jsonDatas = new ArrayList<>();
@@ -19,10 +34,19 @@ public class Main {
             jsonData.put("SortCondition", "ASC");
             jsonDatas.add(jsonData);
         }
+        jsonData = new HashMap<>();
+        jsonData.put("Sort", "GRADE");
+        jsonData.put("SortCondition", "DESC");
+        jsonData.put("ItemName", "융화");
+        jsonData.put("CategoryCode", 50010);
+        jsonDatas.add(jsonData);
 
-        GetLostarkData getLostarkData = new GetLostarkData();
+        /**
+         * dataSheet 형식으로 저장
+         * Id, Name, YDayAvgPrice, RecentPrice 만 저장
+         * GetLostarkData 를 이용해 jsonDatas 에 담긴 검색어 관련 데이터 전부 받아오기 -> 데이터를 원하는 키값을 가진 것들만 가져옴 -> dataSheet 에 저장
+         */
         List<List<Map<String, Object>>> data = GetLostarkData.getData(jsonDatas);
-        List<Map<String, Object>> SortedUsefulData = new ArrayList<>();
         DataSheet dataSheet = new DataSheet();
 
         for (List<Map<String, Object>> dataList : data) {
@@ -40,7 +64,6 @@ public class Main {
         for (Map<String, Object> dataMap : dataSheet.getData()) {
             System.out.println(dataMap);
         }
-        System.out.println(dataSheet.encoding());
     }
 
     public static class DataSheet {

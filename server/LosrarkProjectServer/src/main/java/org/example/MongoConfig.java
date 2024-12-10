@@ -55,18 +55,22 @@ public class MongoConfig {
      * cursor 에는 MongoCursor<Document> 형식으로 만듦
      * 리턴 사용법 while (cursor.hasNext()) {function(cursor.next().toJson)}
      */
-    public MongoCursor<Document> MongoDBRead (Document filter){
+    public MongoCursor<Document> MongoDBRead (Document filter) {
+        MongoCursor<Document> cursor = null;
         try {
             MongoDatabase database = getDatabase();
             MongoCollection<Document> collection = database.getCollection(COLLECTION);
 
-            MongoCursor<Document> cursor = collection.find().iterator();
-            System.out.println("Document read successfully");
-            return cursor;
+            cursor = collection.find(filter).iterator();
         } catch (Exception e) {
             System.out.println("Error reading to MongoDB: " + e.getMessage());
-            return null;
         }
+        if (cursor.hasNext()) {
+            System.out.println("Document found");
+        } else {
+            System.out.println("Document not found");
+        }
+        return cursor;
     }
 
     /**
@@ -74,7 +78,7 @@ public class MongoConfig {
      * @param filter
      * @param update
      * filter 에는 쿼리문을 넣도록 예) and(gte("age",30), eq("city","seoul"))
-     * updata 에는 테이터를 넣도록 예) Document ("name", "Alice"). append("Age",22). append("city","Seoul")
+     * updata 에는 테이터를 넣도록 예) Document("$set",new Document("Age",25))
      */
     public void MongoDBUpdate (Document filter, Document update){
         try {

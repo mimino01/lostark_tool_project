@@ -1,5 +1,6 @@
 package org.example;
 
+import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 
 import java.time.LocalDateTime;
@@ -16,9 +17,27 @@ public class Main {
         Document doc = new Document("name", "Alice")
                 .append("Age",22)
                 .append("city","Seoul");
+        Document filter = new Document("Age", 22);
+        Document updateDoc = new Document("Age",22);
+        Document update = new Document("$set",updateDoc);
 
         MongoConfig mongoConfig = new MongoConfig();
-        mongoConfig.MongoDBCreate(doc);
+
+//        mongoConfig.MongoDBCreate(doc);
+
+//        MongoCursor<Document> data = mongoConfig.MongoDBRead(filter);
+//        System.out.println(data.next());
+
+//        mongoConfig.MongoDBUpdate(filter, update);
+
+//        mongoConfig.MongoDBDelete(updateDoc);
+
+        MongoCursor<Document> data = mongoConfig.MongoDBRead(updateDoc);
+        if (data.hasNext()) {
+            System.out.println(data.next());
+        } else {
+            System.out.println("No data found");
+        }
     }
 
     public static void App() {

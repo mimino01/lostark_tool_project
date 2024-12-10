@@ -1,5 +1,7 @@
 package org.example;
 
+import org.bson.Document;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,8 +13,12 @@ public class Main {
     }
 
     public static void MongoDB() {
+        Document doc = new Document("name", "Alice")
+                .append("Age",22)
+                .append("city","Seoul");
+
         MongoConfig mongoConfig = new MongoConfig();
-        mongoConfig.MongoDBCreate();
+        mongoConfig.MongoDBCreate(doc);
     }
 
     public static void App() {

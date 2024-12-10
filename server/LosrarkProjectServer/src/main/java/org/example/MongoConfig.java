@@ -3,6 +3,8 @@ package org.example;
 import com.mongodb.client.*;
 import org.bson.Document;
 
+import java.util.List;
+
 /**
  * 몽고디비랑 통실 할 클래스 모음집
  * 알아서 쓰셈 ㅋㅋ
@@ -10,7 +12,7 @@ import org.bson.Document;
 public class MongoConfig {
     private static final String URL = "mongodb://localhost:27017";
     private static final String DATABASE = "Lostark";
-    private static final String COLLECTION = "dataCal";
+    private static final String COLLECTION = "dataCal1";
 
     /**
      * 생성자인데 의미 없음 뭐 할꺼임?
@@ -31,7 +33,7 @@ public class MongoConfig {
     }
 
     /**
-     * Doucment 형식으로 데이터 추가
+     * Doucment 형식으로 데이터 추가 (필드 추가)
      * @param doc
      * doc 에는 테이터를 넣도록 예) Document ("name", "Alice"). append("Age",22). append("city","Seoul")
      */
@@ -48,12 +50,41 @@ public class MongoConfig {
     }
 
     /**
+     * List<Document> 형식으로 데이터 추가 (도큐먼트 추가)
+     * @param docs
+     * docs 에는 도큐먼트를 넣도록 해
+     * List<Document> documents = new ArrayList<>();
+     * for (Stock stock : stocks) {
+     *     Document doc = new Document("stockName", stock.getName())
+     *                       .append("timestamp", stock.getTimestamp())
+     *                       .append("previousPrice", stock.getPreviousPrice())
+     *                       .append("currentPrice", stock.getCurrentPrice());
+     *     documents.add(doc);
+     * }
+     * collection.insertMany(documents);
+     */
+    public void MongoDBCreate (List<Document> docs) {
+        try {
+            MongoDatabase database = getDatabase();
+            MongoCollection<Document> collection = database.getCollection(COLLECTION);
+            collection.insertMany(docs);
+
+            System.out.println("Document inserted successfully");
+        } catch (Exception e) {
+            System.out.println("Error inserting to MongoDB: " + e.getMessage());
+        }
+    }
+
+    /**
      * filter값 이용해 read
      * @param filter
      * @return cursor
      * filter 에는 쿼리문을 넣도록 예) and(gte("age",30), eq("city","seoul"))
      * cursor 에는 MongoCursor<Document> 형식으로 만듦
-     * 리턴 사용법 while (cursor.hasNext()) {function(cursor.next().toJson)}
+     * 리턴 사용법
+     * while(cursor.hasNext()){
+     *     function(cursor.next)
+     * }
      */
     public MongoCursor<Document> MongoDBRead (Document filter) {
         MongoCursor<Document> cursor = null;

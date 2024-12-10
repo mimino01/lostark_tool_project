@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-//        App();
-        MongoDB();
+        App();
+//        MongoDB();
     }
 
     public static void MongoDB() {
@@ -47,6 +47,7 @@ public class Main {
         /**
          * 받아올 데이터 검색
          * jsonDatas 에 검색어 저장
+         * categoryCodes 는 생활 재료, 밑에 독립적인건 융화재료
          */
         int[] categoryCodes = {90200, 90300, 90400, 90500, 90600, 90700};
 
@@ -64,16 +65,20 @@ public class Main {
         jsonData.put("SortCondition", "DESC");
         jsonData.put("ItemName", "융화");
         jsonData.put("CategoryCode", 50010);
-        jsonDatas.add(jsonData);
+        jsonDatas.add(jsonData); // <<----- 이새끼 jsonDatas 에 검색 조건이 다 들어 있음
 
         /**
          * dataSheet 형식으로 저장
          * Id, Name, YDayAvgPrice, RecentPrice 만 저장
          * GetLostarkData 를 이용해 jsonDatas 에 담긴 검색어 관련 데이터 전부 받아오기 -> 데이터를 원하는 키값을 가진 것들만 가져옴 -> dataSheet 에 저장
          */
-        List<List<Map<String, Object>>> data = GetLostarkData.getData(jsonDatas);
-        DataSheet dataSheet = new DataSheet();
+        List<List<Map<String, Object>>> data = GetLostarkData.getData(jsonDatas); // 이새끼가 서버에서 받아온 데이터 저장하는 놈임
+        DataSheet dataSheet = new DataSheet(); //쌈@뽕한 데이터 저장용 클래스
 
+        /**
+         * 받아온 데이터 정제하는 놈임
+         * 받아온 데이터중에서 쓸모없는거 다 쳐내고 아이디, 이름, 어제가격, 현재가격만 저장함
+         */
         for (List<Map<String, Object>> dataList : data) {
             for (Map<String, Object> dataMap : dataList) {
 //                System.out.println(dataMap);
@@ -89,6 +94,7 @@ public class Main {
         for (Map<String, Object> dataMap : dataSheet.getData()) {
             System.out.println(dataMap);
         }
+        dataSheet.saveData();
     }
 
     public static class DataSheet {
@@ -233,6 +239,36 @@ public class Main {
                 response.add(data.getData());
             }
             return response;
+        }
+
+        public void saveData() {
+            List<Document> doc = new ArrayList<>();
+            Document docs = new Document();
+            Document time = new Document();
+            LocalDateTime now = LocalDateTime.now();
+
+            /**
+             * sheet 형식으로 저장된 데이터를 List<Document> 형식으로 변환해야함
+             */
+            for (Data data : data) {
+                doc.add(new Document(data.getData()));
+            }
+
+            /**
+             * 시간은 년도 월 일 시 분 초 로 나누어 저장
+             */
+            time.append("year",now.getYear());
+            time.append("month",now.getMonthValue());
+            time.append("day",now.getDayOfMonth());
+            time.append("hour",now.getHour());
+            time.append("minute",now.getMinute());
+            time.append("second",now.getSecond());
+
+            docs.append("time",time);
+            docs.append("Data", doc);
+
+            MongoConfig mongoConfig = new MongoConfig();
+            mongoConfig.MongoDBCreate(docs);
         }
     }
 }

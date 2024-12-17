@@ -2,7 +2,7 @@ package org.example;
 
 import com.mongodb.client.*;
 import org.bson.Document;
-
+import org.bson.conversions.Bson;
 import java.util.List;
 
 /**
@@ -12,7 +12,7 @@ import java.util.List;
 public class MongoConfig {
     private static final String URL = "mongodb://localhost:27017";
     private static final String DATABASE = "Lostark";
-    private static final String COLLECTION = "dataCal1";
+    private static final String COLLECTION = "testCollector1";
 
     /**
      * 생성자인데 의미 없음 뭐 할꺼임?
@@ -74,17 +74,48 @@ public class MongoConfig {
             System.out.println("Error inserting to MongoDB: " + e.getMessage());
         }
     }
+    public MongoCursor<Document> MongoDBRead (int test) {
+        MongoCursor<Document> cursor = null;
+        try {
+            MongoDatabase database = getDatabase();
+            MongoCollection<Document> collection = database.getCollection(COLLECTION);
+
+            cursor = collection.find().iterator();
+        } catch (Exception e) {
+            System.out.println("Error reading to MongoDB: " + e.getMessage());
+        }
+        if (cursor.hasNext()) {
+            System.out.println("Document found");
+        } else {
+            System.out.println("Document not found");
+        }
+        return cursor;
+    }
 
     /**
+     * @return cursor 서버에 저장된 모은 데이터
+     */
+    public MongoCursor<Document> MongoDBRead () {
+        MongoCursor<Document> cursor = null;
+        try {
+            MongoDatabase database = getDatabase();
+            MongoCollection<Document> collection = database.getCollection(COLLECTION);
+
+            cursor = collection.find().iterator();
+        } catch (Exception e) {
+            System.out.println("Error reading to MongoDB: " + e.getMessage());
+        }
+        if (cursor.hasNext()) {
+            System.out.println("Document found");
+        } else {
+            System.out.println("Document not found");
+        }
+        return cursor;
+    }
+    /**
      * filter값 이용해 read
-     * @param filter
-     * @return cursor
-     * filter 에는 쿼리문을 넣도록 예) and(gte("age",30), eq("city","seoul"))
-     * cursor 에는 MongoCursor<Document> 형식으로 만듦
-     * 리턴 사용법
-     * while(cursor.hasNext()){
-     *     function(cursor.next)
-     * }
+     * @param filter Document 타입의 파라메터 - 검색 조건을 입력하면됨
+     * @return cursor MongoCursor<Document> 타입 - 겁색 결과를 반환함
      */
     public MongoCursor<Document> MongoDBRead (Document filter) {
         MongoCursor<Document> cursor = null;
@@ -103,6 +134,116 @@ public class MongoConfig {
         }
         return cursor;
     }
+    /**
+     * @param filter Document 타입의 파라메터 - 검색 조건을 입력하면됨
+     * @param projections Document 타입의 파라메터 - 출력 조건을 입력하면됨
+     * @return cursor MongoCursor<Document> 타입 - 겁색 결과를 반환함
+     */
+    public MongoCursor<Document> MongoDBRead (Document filter, Document projections) {
+        MongoCursor<Document> cursor = null;
+        try {
+            MongoDatabase database = getDatabase();
+            MongoCollection<Document> collection = database.getCollection(COLLECTION);
+
+            cursor = collection.find(filter).projection(projections).iterator();
+        } catch (Exception e) {
+            System.out.println("Error reading to MongoDB: " + e.getMessage());
+        }
+        if (cursor.hasNext()) {
+            System.out.println("Document found");
+        } else {
+            System.out.println("Document not found");
+        }
+        return cursor;
+    }
+    /**
+     * @param filter Bson 타입의 파라메터 - 검색 조건을 입력하면됨
+     * @return cursor MongoCursor<Document> 타입 - 겁색 결과를 반환함
+     */
+    public MongoCursor<Document> MongoDBRead (Bson filter) {
+        MongoCursor<Document> cursor = null;
+        try {
+            MongoDatabase database = getDatabase();
+            MongoCollection<Document> collection = database.getCollection(COLLECTION);
+
+            cursor = collection.find(filter).iterator();
+        } catch (Exception e) {
+            System.out.println("Error reading to MongoDB: " + e.getMessage());
+        }
+        if (cursor.hasNext()) {
+            System.out.println("Document found");
+        } else {
+            System.out.println("Document not found");
+        }
+        return cursor;
+    }
+    /**
+     * @param filter Bson 타입의 파라메터 - 검색 조건을 입력하면됨
+     * @param projections Document 타입의 파라메터 - 출력 조건을 입력하면됨
+     * @return cursor MongoCursor<Document> 타입 - 겁색 결과를 반환함
+     */
+    public MongoCursor<Document> MongoDBRead (Bson filter, Document projections) {
+        MongoCursor<Document> cursor = null;
+        try {
+            MongoDatabase database = getDatabase();
+            MongoCollection<Document> collection = database.getCollection(COLLECTION);
+
+            cursor = collection.find(filter).projection(projections).iterator();
+        } catch (Exception e) {
+            System.out.println("Error reading to MongoDB: " + e.getMessage());
+        }
+        if (cursor.hasNext()) {
+            System.out.println("Document found");
+        } else {
+            System.out.println("Document not found");
+        }
+        return cursor;
+    }
+    /**
+     * @param filter Bson 타입의 파라메터 - 검색 조건을 입력하면됨
+     * @param projections Bson 타입의 파라메터 - 출력 조건을 입력하면됨
+     * @return cursor MongoCursor<Document> 타입 - 겁색 결과를 반환함
+     */
+    public MongoCursor<Document> MongoDBRead (Bson filter, Bson projections) {
+        MongoCursor<Document> cursor = null;
+        try {
+            MongoDatabase database = getDatabase();
+            MongoCollection<Document> collection = database.getCollection(COLLECTION);
+
+            cursor = collection.find(filter).projection(projections).iterator();
+        } catch (Exception e) {
+            System.out.println("Error reading to MongoDB: " + e.getMessage());
+        }
+        if (cursor.hasNext()) {
+            System.out.println("Document found");
+        } else {
+            System.out.println("Document not found");
+        }
+        return cursor;
+    }
+    /**
+     * @param filter Document 타입의 파라메터 - 검색 조건을 입력하면됨
+     * @param projections Bson 타입의 파라메터 - 출력 조건을 입력하면됨
+     * @return cursor MongoCursor<Document> 타입 - 겁색 결과를 반환함
+     */
+    public MongoCursor<Document> MongoDBRead (Document filter, Bson projections) {
+        MongoCursor<Document> cursor = null;
+        try {
+            MongoDatabase database = getDatabase();
+            MongoCollection<Document> collection = database.getCollection(COLLECTION);
+
+            cursor = collection.find(filter).projection(projections).iterator();
+        } catch (Exception e) {
+            System.out.println("Error reading to MongoDB: " + e.getMessage());
+        }
+        if (cursor.hasNext()) {
+            System.out.println("Document found");
+        } else {
+            System.out.println("Document not found");
+        }
+        return cursor;
+    }
+
 
     /**
      * filter값과 같은 데이터를 update 값으로 수정

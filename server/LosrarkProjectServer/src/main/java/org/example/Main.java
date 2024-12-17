@@ -1,42 +1,110 @@
 package org.example;
 
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-        App();
-//        MongoDB();
+//        App();
+        MongoDB();
     }
 
     public static void MongoDB() {
-        Document doc = new Document("name", "Alice")
-                .append("Age",22)
-                .append("city","Seoul");
-        Document filter = new Document("Age", 22);
-        Document updateDoc = new Document("Age",22);
-        Document update = new Document("$set",updateDoc);
+        tools tool = new tools();
 
-        MongoConfig mongoConfig = new MongoConfig();
+        DBGeneration dbg = new DBGeneration();
+        dbg.search("들꽃",tool.transUNIXTime(2025, 5,10),tool.transUNIXTime(2023,5,10));
+        System.out.println(tool.transUNIXTime(2025, 5,10));
+        dbg.search("들꽃");
 
+//        Document doc = new Document("name", "Alice")
+//                .append("Age",22)
+//                .append("city","Seoul");
+//        Document filter = new Document("Data",
+//                new Document("$elemMatch",
+//                        new Document("Name", "화사한 들꽃")
+//                )
+//        );
+//        Document projection = new Document("Data.$",1);
+//        Document updateDoc = new Document("Name","들꽃");
+//        Document update = new Document("$set",updateDoc);
+//
+//        MongoConfig mongoConfig = new MongoConfig();
+//
 //        mongoConfig.MongoDBCreate(doc);
-
+//
 //        MongoCursor<Document> data = mongoConfig.MongoDBRead(filter);
 //        System.out.println(data.next());
-
+//
 //        mongoConfig.MongoDBUpdate(filter, update);
-
+//
 //        mongoConfig.MongoDBDelete(updateDoc);
+//
+//        MongoCursor<Document> data = mongoConfig.MongoDBRead(filter, projection);
+//        if (data.hasNext()) {
+//            System.out.println(data.next());
+//        } else {
+//            System.out.println("No data found");
+//        }
+    }
 
-        MongoCursor<Document> data = mongoConfig.MongoDBRead(updateDoc);
-        if (data.hasNext()) {
-            System.out.println(data.next());
-        } else {
-            System.out.println("No data found");
+    public static class DBGeneration {
+        public DBGeneration() {
+
+        }
+        /**
+         * 그냥 파라메터 없는 서치는 모든 데이터 빼다 박음 ㅋㅋ 좆댔네 이건 진짜 쓰지말자 ㄹㅇ
+         */
+        public void search() {
+            MongoConfig mongoConfig = new MongoConfig();
+            MongoCursor<Document> data = mongoConfig.MongoDBRead();
+            if (data.hasNext()) {
+                System.out.println(data.next());
+            } else {
+                System.out.println("No data found");
+            }
+        }
+        public void search(String Name) {
+            Bson filter = Filters.eq("Data.Name", Name);
+            Bson projection = Projections.fields(
+                    Projections.include("time"),
+                    Projections.elemMatch("Data", Filters.eq("Name", Name))
+            );
+            MongoConfig mongoConfig = new MongoConfig();
+            MongoCursor<Document> data = mongoConfig.MongoDBRead(filter, projection);
+            if (data.hasNext()) {
+                System.out.println(data.next());
+            } else {
+                System.out.println("No data found");
+            }
+        }
+        public void search(String Name, long upper, long lower) {
+            Bson filter = Filters.and(
+                    Filters.eq("Data.Name", Name),
+                    Filters.gte("time",lower),
+                    Filters.lte("time",upper)
+            );
+            Bson projection = Projections.fields(
+                    Projections.include("time"),
+                    Projections.elemMatch("Data", Filters.eq("Name", Name))
+            );
+            MongoConfig mongoConfig = new MongoConfig();
+            MongoCursor<Document> data = mongoConfig.MongoDBRead(filter, projection);
+            if (data.hasNext()) {
+                System.out.println(data.next());
+            } else {
+                System.out.println("No data found");
+            }
         }
     }
 
@@ -244,7 +312,6 @@ public class Main {
         public void saveData() {
             List<Document> doc = new ArrayList<>();
             Document docs = new Document();
-            Document time = new Document();
             LocalDateTime now = LocalDateTime.now();
 
             /**
@@ -257,18 +324,56 @@ public class Main {
             /**
              * 시간은 년도 월 일 시 분 초 로 나누어 저장
              */
-            time.append("year",now.getYear());
-            time.append("month",now.getMonthValue());
-            time.append("day",now.getDayOfMonth());
-            time.append("hour",now.getHour());
-            time.append("minute",now.getMinute());
-            time.append("second",now.getSecond());
+            Long time = now.toInstant(ZoneOffset.UTC).getEpochSecond();
 
             docs.append("time",time);
             docs.append("Data", doc);
 
             MongoConfig mongoConfig = new MongoConfig();
             mongoConfig.MongoDBCreate(docs);
+        }
+    }
+
+    public static class tools{
+        public tools() {
+
+        }
+
+        /**
+         * 일반 시간을 유닉스 타임으로 변환
+         * @param year 년
+         * @param month 월
+         * @param day 일
+         * @param hour 시간 (24시간제)
+         * @param min 분
+         * @param sec 초
+         * @return unix time 유닉스 타임
+         */
+        public long transUNIXTime (int year, int month, int day, int hour, int min, int sec) {
+            LocalDateTime dataTime = LocalDateTime.of(year, month, day, hour, min, sec);
+            return dataTime.toInstant(ZoneOffset.UTC).getEpochSecond();
+        }
+
+        /**
+         * 일반 시간을 유닉스 타임으로 변환 (0시 0분 0초)
+         * @param year 년
+         * @param month 월
+         * @param day 알
+         * @return unix time 유닉스 타임
+         */
+        public long transUNIXTime (int year, int month, int day) {
+            LocalDateTime dataTime = LocalDateTime.of(year, month, day, 0, 0, 0);
+            return dataTime.toInstant(ZoneOffset.UTC).getEpochSecond();
+        }
+
+        /**
+         * 유닉스 시간을 일반 시간으로 변환
+         * @param UNIXTime 유닉스 시간
+         * @return date time 일반 시간
+         */
+        public String transDateTime (long UNIXTime) {
+            LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(UNIXTime), ZoneOffset.UTC);
+            return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         }
     }
 }
